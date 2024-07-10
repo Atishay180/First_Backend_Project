@@ -47,6 +47,7 @@ const userSchema = new Schema({
     }
 }, { timestamps: true })
 
+// Pre-save Middleware for Password Hashing
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next()
 
@@ -54,10 +55,12 @@ userSchema.pre("save", async function (next) {
     next()
 })
 
+//Method to Check Password Correctness
 userSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password)
 }
 
+// Methods for Generating Json Web Tokens
 userSchema.methods.generateAccessToken = function () { 
     return jwt.sign(
         {
