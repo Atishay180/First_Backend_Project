@@ -4,7 +4,7 @@ class ApiERROR extends Error {
         message = "Something went wrong",
         errors = [],
         stack = ""
-    ) {  //overrude
+    ) {  //override
         super(message)
         this.statusCode = statusCode
         this.data = null
