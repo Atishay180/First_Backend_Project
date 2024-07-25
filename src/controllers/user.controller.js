@@ -53,7 +53,7 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiERROR(400, "password is required")
     }
 
-    // step-3 check if user already exists: username, email
+    // step-3 check if user already exists: username or email
     const existedUser = await User.findOne({
         $or: [{ username }, { email }]
     })
@@ -82,7 +82,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     //step-6 create user object - create entry in db
     const user = await User.create({
-        fullName,
+        fullName,    //fullName: fullName
         avatar: avatar.url,
         coverImage: coverImage?.url || "",
         email,
@@ -92,8 +92,8 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // step-7 remove password and refresh token frield from response
     const createdUser = await User.findById(user._id).select(
-        "-password -refreshToken" //what you don't want 
-    ).lean()
+        "-password -refreshToken" //remove password and refreshToken
+    )
 
     //step-8 check for user creation
     if (!createdUser) {
@@ -149,7 +149,7 @@ const loginUser = asyncHandler(async (req, res) => {
         secure: true,
     }
     return res
-    status(200)
+    .status(200)
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
         .json(
@@ -186,7 +186,7 @@ const logoutUser = asyncHandler(async (req, res) => {
         .status(200)
         .clearCookie("accessToken", options)
         .clearCookie("refreshToken", options)
-        .json(new ApiResponse(200, {}, "User logged out "))
+        .json(new ApiResponse(200, {}, "User logged out successfully"))
 })
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
@@ -271,27 +271,27 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
         req.user?._id,
         {
             $set: {
-                fullName,
-                email,
+                fullName,     //fullname: fullname,
+                email,       //email: email
             }
         },
         { new: true }
     ).select("-password")
 
     return res
-    .status(200)
-    .json(new ApiResponse(200, user, "Account updated successfully"))
+        .status(200)
+        .json(new ApiResponse(200, user, "Account updated successfully"))
 })
 
-const updateUserAvatar = asyncHandler(async(res, res) => {
+const updateUserAvatar = asyncHandler(async (req, res) => {
     const avatarLocalPath = req.file?.path
 
-    if(!avatarLocalPath){
+    if (!avatarLocalPath) {
         throw new ApiERROR(400, "Avatar file is missing")
     }
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
-    if(!avatar.url){
+    if (!avatar.url) {
         throw new ApiERROR(400, "Error while uploading on avatar")
     }
 
@@ -302,23 +302,23 @@ const updateUserAvatar = asyncHandler(async(res, res) => {
                 avatar: avatar.url
             }
         },
-        {new: true}
-    ).select("-password")
+        { new: true }
+    ).select("-password")    //do not select password
 
     return res
-    .status(200)
-    .json(new ApiResponse(200, user, "Avatar updated successfully"))
+        .status(200)
+        .json(new ApiResponse(200, user, "Avatar updated successfully"))
 })
 
-const updateUserCoverImage = asyncHandler(async(res, res) => {
+const updateUserCoverImage = asyncHandler(async (req, res) => {
     const coverImageLocalPath = req.file?.path
 
-    if(!coverImageLocalPath){
+    if (!coverImageLocalPath) {
         throw new ApiERROR(400, "CoverImage file is missing")
     }
 
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
-    if(!coverImage.url){
+    if (!coverImage.url) {
         throw new ApiERROR(400, "Error while uploading on coverImage")
     }
 
@@ -329,15 +329,15 @@ const updateUserCoverImage = asyncHandler(async(res, res) => {
                 coverImage: coverImage.url
             }
         },
-        {new: true}
+        { new: true }
     ).select("-password")
 
     return res
-    .status(200)
-    .json(new ApiResponse(200, user, "CoverImage updated successfully"))
+        .status(200)
+        .json(new ApiResponse(200, user, "CoverImage updated successfully"))
 })
 
-export { 
+export {
     registerUser,
     loginUser,
     logoutUser,
