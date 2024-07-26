@@ -350,7 +350,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
                 username: username?.toLowerCase()
             }
         },
-        {  //count subscriptions
+        {  //count my subscribers 
             $lookup: {
                 from: "subscriptions",
                 localField: "_id",
@@ -358,7 +358,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
                 as: "subscribers"
             }
         },
-        {
+        {   //count subscribed to how much channels 
             $lookup: {
                 from: "subscriptions",
                 localField: "_id",
