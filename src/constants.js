@@ -1,1 +1,1 @@
-export const DB_NAME = "INITIALBACKEND"
+export const DB_NAME = "video-streaming-backend"
